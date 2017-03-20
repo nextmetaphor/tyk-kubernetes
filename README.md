@@ -23,13 +23,15 @@ kubectl create -f tyk/tyk-gateway-service.yaml
 
 # Open Dashboard
 open http://`minikube ip`:30001
+```
 
+### Update the Dashboard
+```bash
 # Create an update deployment
 kubectl create -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
 
 # Patch the service to point at it
 kubectl patch -f tyk/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "v1.3.2"}}}'
-
 ```
 
 
