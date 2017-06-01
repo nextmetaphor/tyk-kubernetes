@@ -1,5 +1,11 @@
 ### Commands To Create
 ```bash
+kubectl create configmap influxdb-conf --from-file=influxdb/influxdb.conf
+kubectl create -f influxdb/influxdb-deployment.yaml
+kubectl create -f influxdb/influxdb-service.yaml
+# minikube only
+open http://`minikube ip`:30101
+
 # Mongo
 kubectl create -f mongo/mongo-deployment.yaml
 kubectl create -f mongo/mongo-service.yaml
