@@ -1,5 +1,5 @@
 # Tyk Professional Installation on Kubernetes
-This guide details how to install a Tyk Professional installation on a `minikube` Kubernetes installation. It also shows how a Grafana dashboard can be used to configured to monitor the environment.
+This guide details how to install a Tyk Professional installation on a `minikube` Kubernetes installation. It also shows how a Grafana dashboard can be used to configured to provide detailed monitoring for environment.
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ open http://`minikube ip`:30101
 Note that
 * the Port should be set to `30100`
 * the Username should be set to `admin`
-* the Paswword should be set to `admin`
+* the Password should be set to `admin`
 
 
 #### Install Telegraf
@@ -51,30 +51,59 @@ open http://`minikube ip`:30102
 ```
 Note that
 * the Username should be set to `admin`
-* the Paswword should be set to `admin`
+* the Password should be set to `admin`
+
+Once logged in, create a data source with the following options:
+* the **Name** should be set to `Gateway`
+* the **Type** should be set to `InfluxDB`
+
+Within the **Http settings** section:
+* the **Url** should be set to `http://influxdb:8086`
+* **Access** should be set to `Proxy`
+
+Leave everything unchecked in the **Http Auth** section.
+
+Within the **InfluxDB Details** section:
+* the **Database** should be set to `telegraf`
+* the **User** should be set to `admin`
+* the **Password** should be set to `admin`
 
 ### Install Mongo
+Install the Mongo database which stores the Tyk API definitions and long-term analytics information.
+
+```
 kubectl create -f mongo/mongo-deployment.yaml
 kubectl create -f mongo/mongo-service.yaml
+```
 
 ### Install Redis
+Install the Redis distributed in-memory cache which stores the active API keys and short-term analytics information.
+
+```
 kubectl create -f redis/redis-deployment.yaml
 kubectl create -f redis/redis-service.yaml
+```
 
 ### Install Tyk Dashboard
+Install the Tyk Dashboard which allow us to administer the API gateway environment.
+```
 kubectl create configmap tyk-dashboard-conf --from-file=tyk/tyk_analytics.conf
 kubectl create -f tyk/tyk-dashboard-deployment-v1.3.1.yaml
 
 kubectl create -f tyk/tyk-dashboard-service.yaml
+```
 
 ### Install Tyk Gateway
+Install the Tyk Gateway nodes themselves.
+```
 kubectl create configmap tyk-gateway-conf --from-file=tyk/tyk.conf
 kubectl create -f tyk/tyk-gateway-deployment.yaml
 kubectl create -f tyk/tyk-gateway-service.yaml
 
 ./init.sh
+```
 
-# Open Dashboard
+#### TODO - Open Dashboard
 open http://`minikube ip`:30001
 ```
 
