@@ -87,27 +87,34 @@ kubectl create -f redis/redis-service.yaml
 ### Install Tyk Dashboard
 Install the Tyk Dashboard which allow us to administer the API gateway environment.
 ```
-kubectl create configmap tyk-dashboard-conf --from-file=tyk/tyk_analytics.conf
-kubectl create -f tyk/tyk-dashboard-deployment-v1.3.1.yaml
-
-kubectl create -f tyk/tyk-dashboard-service.yaml
+kubectl create configmap tyk-dashboard-conf --from-file=tyk-dashboard/tyk_analytics.conf
+kubectl create -f tyk-dashboard/tyk-dashboard-deployment-v1.3.1.yaml
+kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
 ```
 
 ### Install Tyk Gateway
 Install the Tyk Gateway nodes themselves.
 ```
-kubectl create configmap tyk-gateway-conf --from-file=tyk/tyk.conf
-kubectl create -f tyk/tyk-gateway-deployment.yaml
-kubectl create -f tyk/tyk-gateway-service.yaml
+kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf
+kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml
+kubectl create -f tyk-gateway/tyk-gateway-service.yaml
 
 ./init.sh
 ```
 
-#### TODO - Open Dashboard
+## Validation
+
+#### Open the Tyk Dashboard
+Execute the following command to log into the Tyk Dashboard:
+```
 open http://`minikube ip`:30001
 ```
+At the login screen:
+* the **Username** should be set to `admin@test.com`
+* the **Password** should be set to `admin123`
 
-### Update the Dashboard
+
+### TODO - Update the Dashboard
 ```bash
 # Create an update deployment
 kubectl create -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
