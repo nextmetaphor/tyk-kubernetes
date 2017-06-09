@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sample-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sample-api
+    spec:
+      containers:
+      - image: nextmetaphor/simple-golang-api:latest
+        imagePullPolicy: Always
+        name: sample-api
+        ports:
+        - containerPort: 8080
