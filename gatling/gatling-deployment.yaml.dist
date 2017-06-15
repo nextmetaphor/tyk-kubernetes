@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gatling
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gatling
+    spec:
+      containers:
+      - image: nextmetaphor/alpine-gatling:latest
+        imagePullPolicy: Always
+        name: gatling
+        command: ["/opt/gatling-charts-highcharts-bundle/bin/gatling.sh"]
+        args: ["-sf", "user-files", "-s", "sampleapi.SampleAPISimulation"]
+        ports:
+        env:
+        volumeMounts:
+          - name: gatling-user-files
+            mountPath: /opt/gatling-charts-highcharts-bundle/user-files
+          - name: gatling-results
+            mountPath: /opt/gatling-charts-highcharts-bundle/results
+
+      volumes:
+      - name: gatling-user-files
+        hostPath:
+          path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/user-files
+      - name: gatling-results
+        hostPath:
+          path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/results

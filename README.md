@@ -73,7 +73,7 @@ Within the **InfluxDB Details** section:
 * the **User** should be set to `admin`
 * the **Password** should be set to `admin`
 
-### 04. Install Mongo
+#### 04. Install Mongo
 Install the Mongo database which stores the Tyk API definitions and long-term analytics information.
 
 ```
@@ -81,7 +81,7 @@ kubectl create -f mongo/mongo-deployment.yaml
 kubectl create -f mongo/mongo-service.yaml
 ```
 
-### 05. Install Redis
+#### 05. Install Redis
 Install the Redis distributed in-memory cache which stores the active API keys and short-term analytics information.
 
 ```
@@ -89,7 +89,7 @@ kubectl create -f redis/redis-deployment.yaml
 kubectl create -f redis/redis-service.yaml
 ```
 
-### 06. Install Tyk Dashboard
+#### 06. Install Tyk Dashboard
 Install the Tyk Dashboard which allow us to administer the API gateway environment.
 ```
 kubectl create configmap tyk-dashboard-conf --from-file=tyk-dashboard/tyk_analytics.conf
@@ -97,7 +97,7 @@ kubectl create -f tyk-dashboard/tyk-dashboard-deployment-v1.3.1.yaml
 kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
 ```
 
-### 07. Install Tyk Gateway
+#### 07. Install Tyk Gateway
 Install the Tyk Gateway nodes themselves.
 ```
 kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf
@@ -107,18 +107,23 @@ kubectl create -f tyk-gateway/tyk-gateway-service.yaml
 ./init.sh
 ```
 
-### 08. Install Tyk Pump
+#### 08. Install Tyk Pump
 Install the Tyk Pump which extracts analytic data from Redis.
 ```
 kubectl create configmap tyk-pump-conf --from-file=tyk-pump/pump.conf
 kubectl create -f tyk-pump/tyk-pump-deployment.yaml
 ```
 
-### 09. Install A Sample API
+#### 09. Install A Sample API
 Install a sample API that we can use to test the gateway,
 ```
 kubectl create -f sample-api/sample-api-deployment.yaml
 kubectl create -f sample-api/sample-api-service.yaml
+```
+
+#### 10. Install Gatling
+```
+kubectl create -f gatling/gatling-deployment.yaml
 ```
 
 ## Validation
