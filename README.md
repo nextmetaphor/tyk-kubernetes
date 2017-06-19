@@ -11,6 +11,12 @@ This guide details how to install a Tyk Professional installation on a `minikube
 ### Install
 See [https://nextmetaphor.io/2017/01/19/local-kubernetes-on-macos/](https://nextmetaphor.io/2017/01/19/local-kubernetes-on-macos/) for details on how to install the prerequisite software onto macOS.
 
+The current date and time on `minikube` containers often falls behind the actual date and time. Use the following command to rectify that; for more details see [https://github.com/kubernetes/minikube/issues/1378](https://github.com/kubernetes/minikube/issues/1378).
+
+```
+minikube ssh -- docker run -i --rm --privileged --pid=host debian nsenter -t 1 -m -u -n -i date -u $(date -u +%m%d%H%M%Y)
+```
+
 ## Deployment 
 #### 01. Install InfluxDB
 [InfluxDB](https://github.com/influxdata/influxdb) is an open-source time series database that we will use to store the metrics from Tyk. 
@@ -52,7 +58,7 @@ kubectl create -f grafana/grafana-service.yaml
 
 We can verify that this has been deployed successfully by executing the following command which will allow us open the Grafana dashboard and connect to the InfluxDB database.
 ```
-open http://`minikube ip`:30102
+open http://`minikube ip`:30103
 ```
 Note that
 * the Username should be set to `admin`
@@ -140,7 +146,7 @@ At the login screen:
 
 #### View the Statistics in Grafana
 ```
-open http://`minikube ip`:30102
+open http://`minikube ip`:30103
 ```
 minikube ssh -- docker run -i --rm --privileged --pid=host debian nsenter -t 1 -m -u -n -i date -u $(date -u +%m%d%H%M%Y)
 ```
