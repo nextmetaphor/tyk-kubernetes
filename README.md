@@ -129,10 +129,17 @@ kubectl create -f tyk-pump/tyk-pump-deployment.yaml
 ```
 
 #### 09. Install A Sample API
-Install a sample API that we can use to test the gateway,
+Install a sample API that we can use to test the gateway.
 ```bash
 kubectl create -f sample-api/sample-api-deployment.yaml
 kubectl create -f sample-api/sample-api-service.yaml
+```
+
+#### 10. Install An nginx Server
+Install a nginx server which can host the grpc package definitions.
+```bash
+kubectl create -f nginx/nginx-deployment.yaml
+kubectl create -f nginx/nginx-service.yaml
 ```
 
 ## Validation
@@ -206,6 +213,10 @@ open http://`minikube ip`:30001
 ## Uninstalling
 To completely remove all of the configuration, deployments and services from `minikube`, execute the following:
 ```bash
+# Delete nginx
+kubectl delete -f nginx/nginx-service.yaml
+kubectl delete -f nginx/nginx-deployment.yaml
+
 # Delete gatling
 kubectl delete -f gatling/gatling-deployment.yaml
 

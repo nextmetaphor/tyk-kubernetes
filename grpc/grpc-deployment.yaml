@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grpc
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grpc
+    spec:
+      containers:
+      - image: nextmetaphor/tyk-auth-golang-grpc-plugin:latest
+        imagePullPolicy: Always
+        name: grpc
+        ports:
+        - containerPort: 5000
