@@ -116,9 +116,7 @@ kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
 #### 07. Install Tyk Gateway
 Install the Tyk Gateway nodes themselves.
 ```bash
-kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf
-kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml
-kubectl create -f tyk-gateway/tyk-gateway-service.yaml
+kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf; kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml; kubectl create -f tyk-gateway/tyk-gateway-service.yaml
 ```
 
 #### 08. Install Tyk Pump
@@ -141,6 +139,13 @@ Install a nginx server which can host the grpc package definitions.
 kubectl create -f nginx/nginx-deployment.yaml
 kubectl create -f nginx/nginx-service.yaml
 ```
+
+#### 11. Install A grpc Server
+Install a nginx server which can host the grpc package definitions.
+```bash
+kubectl create -f grpc/grpc-deployment.yaml; kubectl create -f grpc/grpc-service.yaml
+```
+
 
 ## Validation
 
@@ -213,6 +218,9 @@ open http://`minikube ip`:30001
 ## Uninstalling
 To completely remove all of the configuration, deployments and services from `minikube`, execute the following:
 ```bash
+# Delete grpc
+kubectl create -f grpc/grpc-service.yaml; kubectl create -f grpc/grpc-deployment.yaml
+
 # Delete nginx
 kubectl delete -f nginx/nginx-service.yaml
 kubectl delete -f nginx/nginx-deployment.yaml
@@ -229,9 +237,7 @@ kubectl delete -f tyk-pump/tyk-pump-deployment.yaml
 kubectl delete configmap tyk-pump-conf
 
 # Delete tyk-gateway
-kubectl delete -f tyk-gateway/tyk-gateway-service.yaml
-kubectl delete -f tyk-gateway/tyk-gateway-deployment.yaml
-kubectl delete configmap tyk-gateway-conf
+kubectl delete -f tyk-gateway/tyk-gateway-service.yaml; kubectl delete -f tyk-gateway/tyk-gateway-deployment.yaml; kubectl delete configmap tyk-gateway-conf
 
 # Delete tyk-dashboard
 kubectl delete -f tyk-dashboard/tyk-dashboard-service.yaml

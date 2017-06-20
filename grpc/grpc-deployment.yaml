@@ -10,8 +10,8 @@ spec:
         app: grpc
     spec:
       containers:
-      - image: nextmetaphor/tyk-auth-golang-grpc-plugin:latest
-        imagePullPolicy: Always
+      - image: tyk-auth-golang-grpc-plugin:latest
+        imagePullPolicy: IfNotPresent
         name: grpc
         ports:
         - containerPort: 5000
