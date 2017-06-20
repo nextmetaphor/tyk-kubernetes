@@ -1,6 +1,11 @@
 # Tyk Professional Installation on Kubernetes
 This guide details how to install a Tyk Professional installation on a `minikube` Kubernetes installation. It also shows how a Grafana dashboard can be used to configured to provide detailed monitoring of the environment.
 
+![Grafana Tyk Overview Dashboard](overview.png)
+<sup>Grafana Overview Dashboard</sup><br><br>
+![Grafana Tyk Middleware Dashboard](middleware.png)
+<sup>Grafana Middleware Dashboard</sup>
+
 ## Getting Started
 
 ### Prerequisites
@@ -27,7 +32,7 @@ kubectl create -f influxdb/influxdb-service.yaml
 ```
 
 We can verify that this has been deployed successfully by executing the following command which will allow us to log into the database.
-```
+```bash
 open http://`minikube ip`:30101
 ```
 
@@ -37,14 +42,14 @@ Note that
 * the Password should be set to `admin`
 
 Create an analytics databases for Tyk.
-```
+```bash
 CREATE DATABASE "tyk_analytics"
 ```
 
 
 #### 02. Install Telegraf
 [Telegraf](https://github.com/influxdata/telegraf) is an open-source metrics collection daemon that we will use to collect metrics from Tyk and then store in InfluxDB.
-```
+```bash
 kubectl create configmap telegraf-conf --from-file=telegraf/telegraf.conf
 kubectl create -f telegraf/telegraf-deployment.yaml
 kubectl create -f telegraf/telegraf-service.yaml
@@ -52,13 +57,13 @@ kubectl create -f telegraf/telegraf-service.yaml
 
 #### 03. Install Grafana
 [Grafana](https://github.com/grafana/grafana) is an open-source metrics dashboard that we will use to visualise the data stored in InfluxDB.
-```
+```bash
 kubectl create -f grafana/grafana-deployment.yaml
 kubectl create -f grafana/grafana-service.yaml
 ```
 
 We can verify that this has been deployed successfully by executing the following command which will allow us open the Grafana dashboard and connect to the InfluxDB database.
-```
+```bash
 open http://`minikube ip`:30103
 ```
 Note that
@@ -87,7 +92,7 @@ Create another datasource with the above values, changing:
 #### 04. Install Mongo
 Install the Mongo database which stores the Tyk API definitions and long-term analytics information.
 
-```
+```bash
 kubectl create -f mongo/mongo-deployment.yaml
 kubectl create -f mongo/mongo-service.yaml
 ```
@@ -95,14 +100,14 @@ kubectl create -f mongo/mongo-service.yaml
 #### 05. Install Redis
 Install the Redis distributed in-memory cache which stores the active API keys and short-term analytics information.
 
-```
+```bash
 kubectl create -f redis/redis-deployment.yaml
 kubectl create -f redis/redis-service.yaml
 ```
 
 #### 06. Install Tyk Dashboard
 Install the Tyk Dashboard which allow us to administer the API gateway environment.
-```
+```bash
 kubectl create configmap tyk-dashboard-conf --from-file=tyk-dashboard/tyk_analytics.conf
 kubectl create -f tyk-dashboard/tyk-dashboard-deployment.yaml
 kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
@@ -110,7 +115,7 @@ kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
 
 #### 07. Install Tyk Gateway
 Install the Tyk Gateway nodes themselves.
-```
+```bash
 kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf
 kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml
 kubectl create -f tyk-gateway/tyk-gateway-service.yaml
@@ -118,14 +123,14 @@ kubectl create -f tyk-gateway/tyk-gateway-service.yaml
 
 #### 08. Install Tyk Pump
 Install the Tyk Pump which extracts analytic data from Redis.
-```
+```bash
 kubectl create configmap tyk-pump-conf --from-file=tyk-pump/pump.conf
 kubectl create -f tyk-pump/tyk-pump-deployment.yaml
 ```
 
 #### 09. Install A Sample API
 Install a sample API that we can use to test the gateway,
-```
+```bash
 kubectl create -f sample-api/sample-api-deployment.yaml
 kubectl create -f sample-api/sample-api-service.yaml
 ```
@@ -134,7 +139,7 @@ kubectl create -f sample-api/sample-api-service.yaml
 
 #### Open the Tyk Dashboard
 Execute the following commands to log into the Tyk Dashboard:
-```
+```bash
 ./init.sh
 
 open http://`minikube ip`:30001
@@ -160,33 +165,42 @@ curl http://`minikube ip`:30002/sample-api/ --header "x-api-version: 1.0" --head
 ```
 
 #### View the Statistics in Grafana
-```
+```bash
 open http://`minikube ip`:30103
 ```
 
 #### Performance Test Using Gatling
-To performance test, create a gatling deployment, passing in the simulation file. This will run constantly and will need killing by removing the Kubernetes deployment.
-```
+To performance test, create a gatling deployment, passing in the simulation file. 
+```bash
 # First edit the gatling/user-files/SampleAPISimulation file and set the API key
 kubectl create -f gatling/gatling-deployment.yaml
+```
+
+This will run constantly and will need killing by removing the Kubernetes deployment.
+```bash
+kubectl delete -f gatling/gatling-deployment.yaml
 ```
 
 #### Patch the Dashboard
 To change the version of the dashboard, simply deploy an alternative version and update the service selector.
 ```bash
 # Create an update deployment
-kubectl create -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
+kubectl create -f tyk-dashboard/tyk-dashboard-deployment-v1.3.2.yaml
 
 # Patch the service to point at it
-kubectl patch -f tyk/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "v1.3.2"}}}'
+kubectl patch -f tyk-dashboard/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "v1.3.2"}}}'
+
+open http://`minikube ip`:30001
 ```
 
 To revert back, simply change the selector again.
 
 ```bash
 # Patch the service to point at it
-kubectl patch -f tyk/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "latest"}}}'
-kubectl delete -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
+kubectl patch -f tyk-dashboard/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "latest"}}}'
+kubectl delete -f tyk-dashboard/tyk-dashboard-deployment-v1.3.2.yaml
+
+open http://`minikube ip`:30001
 ```
 
 ## Uninstalling
