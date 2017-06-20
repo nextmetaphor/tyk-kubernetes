@@ -13,7 +13,7 @@ See [https://nextmetaphor.io/2017/01/19/local-kubernetes-on-macos/](https://next
 
 The current date and time on `minikube` containers often falls behind the actual date and time. Use the following command to rectify that; for more details see [https://github.com/kubernetes/minikube/issues/1378](https://github.com/kubernetes/minikube/issues/1378).
 
-```
+```bash
 minikube ssh -- docker run -i --rm --privileged --pid=host debian nsenter -t 1 -m -u -n -i date -u $(date -u +%m%d%H%M%Y)
 ```
 
@@ -30,7 +30,8 @@ We can verify that this has been deployed successfully by executing the followin
 ```
 open http://`minikube ip`:30101
 ```
-Note that
+
+Note that 
 * the Port should be set to `30100`
 * the Username should be set to `admin`
 * the Password should be set to `admin`
@@ -79,6 +80,10 @@ Within the **InfluxDB Details** section:
 * the **User** should be set to `admin`
 * the **Password** should be set to `admin`
 
+Create another datasource with the above values, changing:
+* the **Name** should be set to `tyk_analytics`
+* the **Database** should be set to `tyk_analytics`
+
 #### 04. Install Mongo
 Install the Mongo database which stores the Tyk API definitions and long-term analytics information.
 
@@ -99,7 +104,7 @@ kubectl create -f redis/redis-service.yaml
 Install the Tyk Dashboard which allow us to administer the API gateway environment.
 ```
 kubectl create configmap tyk-dashboard-conf --from-file=tyk-dashboard/tyk_analytics.conf
-kubectl create -f tyk-dashboard/tyk-dashboard-deployment-v1.3.1.yaml
+kubectl create -f tyk-dashboard/tyk-dashboard-deployment.yaml
 kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
 ```
 
@@ -109,8 +114,6 @@ Install the Tyk Gateway nodes themselves.
 kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf
 kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml
 kubectl create -f tyk-gateway/tyk-gateway-service.yaml
-
-./init.sh
 ```
 
 #### 08. Install Tyk Pump
@@ -127,16 +130,13 @@ kubectl create -f sample-api/sample-api-deployment.yaml
 kubectl create -f sample-api/sample-api-service.yaml
 ```
 
-#### 10. Install Gatling
-```
-kubectl create -f gatling/gatling-deployment.yaml
-```
-
 ## Validation
 
 #### Open the Tyk Dashboard
-Execute the following command to log into the Tyk Dashboard:
+Execute the following commands to log into the Tyk Dashboard:
 ```
+./init.sh
+
 open http://`minikube ip`:30001
 ```
 At the login screen:
@@ -144,14 +144,35 @@ At the login screen:
 * the **Password** should be set to `admin123`
 
 
+#### Deploy an API and Create A Key
+```bash
+# Set the for the Tyk user doing the deployment
+export AUTHORIZATION=
+
+curl http://`minikube ip`:30001/api/apis/ -X POST -d @sample-api/api-definition.json --header "Content-Type: application/json" --header "Authorization: $AUTHORIZATION"
+
+# Set the API ID in the sample-api/token-definition.json file
+curl http://`minikube ip`:30001/api/keys -X POST -d @sample-api/token-definition.json --header "Content-Type: application/json" --header "Authorization: $AUTHORIZATION"
+
+# Set for the key just created
+export KEY_ID=
+curl http://`minikube ip`:30002/sample-api/ --header "x-api-version: 1.0" --header "Authorization: $KEY_ID"
+```
+
 #### View the Statistics in Grafana
 ```
 open http://`minikube ip`:30103
 ```
-minikube ssh -- docker run -i --rm --privileged --pid=host debian nsenter -t 1 -m -u -n -i date -u $(date -u +%m%d%H%M%Y)
+
+#### Performance Test Using Gatling
+To performance test, create a gatling deployment, passing in the simulation file. This will run constantly and will need killing by removing the Kubernetes deployment.
+```
+# First edit the gatling/user-files/SampleAPISimulation file and set the API key
+kubectl create -f gatling/gatling-deployment.yaml
 ```
 
-### TODO - Update the Dashboard
+#### Patch the Dashboard
+To change the version of the dashboard, simply deploy an alternative version and update the service selector.
 ```bash
 # Create an update deployment
 kubectl create -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
@@ -160,21 +181,59 @@ kubectl create -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
 kubectl patch -f tyk/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "v1.3.2"}}}'
 ```
 
+To revert back, simply change the selector again.
 
-### TODO - Commands To Delete
-```
-kubectl delete -f tyk/tyk-dashboard-service.yaml
-kubectl delete -f tyk/tyk-dashboard-deployment-v1.3.1.yaml
+```bash
+# Patch the service to point at it
+kubectl patch -f tyk/tyk-dashboard-service.yaml -p '{"spec": {"selector": {"version": "latest"}}}'
 kubectl delete -f tyk/tyk-dashboard-deployment-v1.3.2.yaml
-kubectl delete configmap tyk-dashboard-conf
+```
 
-kubectl delete -f tyk/tyk-gateway-service.yaml
-kubectl delete -f tyk/tyk-gateway-deployment.yaml
+## Uninstalling
+To completely remove all of the configuration, deployments and services from `minikube`, execute the following:
+```bash
+# Delete gatling
+kubectl delete -f gatling/gatling-deployment.yaml
+
+# Delete sample-api
+kubectl delete -f sample-api/sample-api-service.yaml
+kubectl delete -f sample-api/sample-api-deployment.yaml
+
+# Delete tyk-pump
+kubectl delete -f tyk-pump/tyk-pump-deployment.yaml
+kubectl delete configmap tyk-pump-conf
+
+# Delete tyk-gateway
+kubectl delete -f tyk-gateway/tyk-gateway-service.yaml
+kubectl delete -f tyk-gateway/tyk-gateway-deployment.yaml
 kubectl delete configmap tyk-gateway-conf
 
+# Delete tyk-dashboard
+kubectl delete -f tyk-dashboard/tyk-dashboard-service.yaml
+kubectl delete -f tyk-dashboard/tyk-dashboard-deployment.yaml
+kubectl delete -f tyk-dashboard/tyk-dashboard-deployment-v1.3.1.yaml
+kubectl delete -f tyk-dashboard/tyk-dashboard-deployment-v1.3.2.yaml
+kubectl delete configmap tyk-dashboard-conf 
+
+# Delete redis
 kubectl delete -f redis/redis-service.yaml
 kubectl delete -f redis/redis-deployment.yaml
 
+# Delete mongo
 kubectl delete -f mongo/mongo-service.yaml
 kubectl delete -f mongo/mongo-deployment.yaml
+
+# Delete grafana
+kubectl delete -f grafana/grafana-service.yaml
+kubectl delete -f grafana/grafana-deployment.yaml
+
+# Delete telegraf
+kubectl delete -f telegraf/telegraf-service.yaml
+kubectl delete -f telegraf/telegraf-deployment.yaml
+kubectl delete configmap telegraf-conf
+
+# Delete influxdb
+kubectl delete -f influxdb/influxdb-service.yaml
+kubectl delete -f influxdb/influxdb-deployment.yaml
+kubectl delete configmap influxdb-conf
 ```

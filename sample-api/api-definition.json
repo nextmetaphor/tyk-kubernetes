@@ -1,0 +1,33 @@
+{
+  "api_definition": {
+    "name" : "sample-api",
+    "slug": "sample-api",
+    "active" : true,
+    "auth" : {
+      "auth_header_name": "Authorization"
+    },
+    "proxy": {
+      "listen_path": "/sample-api",
+      "target_url": "http://sample-api:8080",
+      "strip_listen_path": true
+    },
+    "definition": {
+      "location": "header",
+      "key": "x-api-version"
+    },
+    "version_data": {
+      "not_versioned": false,
+      "versions": {
+        "1.0": {
+          "name": "1.0",
+          "expires": "",
+          "paths": {
+            "ignored": [],
+            "white_list": [],
+            "black_list": []
+          }
+        }
+      }
+    }
+  }
+}
