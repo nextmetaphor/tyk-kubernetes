@@ -141,7 +141,7 @@ kubectl create -f nginx/nginx-service.yaml
 ```
 
 #### 11. Install A grpc Server
-Install a nginx server which can host the grpc package definitions.
+Install a custom grpc server which will service the custom plugins.
 ```bash
 kubectl create -f grpc/grpc-deployment.yaml; kubectl create -f grpc/grpc-service.yaml
 ```
