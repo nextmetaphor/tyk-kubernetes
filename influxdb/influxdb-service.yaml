@@ -14,6 +14,10 @@ spec:
     targetPort: 8083
     nodePort: 30101
     protocol: TCP
+  - port: 2003
+    name: graphite-port
+    targetPort: 2003
+    protocol: TCP
   selector:
     app: influxdb
   type: NodePort

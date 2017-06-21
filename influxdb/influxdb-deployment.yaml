@@ -16,6 +16,7 @@ spec:
         ports:
         - containerPort: 8083
         - containerPort: 8086
+        - containerPort: 2003
         volumeMounts:
           - name: influxdb-conf
             mountPath: /etc/influxdb
