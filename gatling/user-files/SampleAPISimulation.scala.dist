@@ -16,7 +16,7 @@ class SampleAPISimulation extends Simulation {
         .get("/sample-api/")
         .header("Authorization", "TODO")
         .header("x-api-version", "1.0"))
-        .pause(0)
+        .pause(1 millisecond, 100 millisecond)
     }
 
   setUp(

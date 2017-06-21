@@ -1,14 +1,14 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: gatling
 spec:
-  replicas: 1
   template:
     metadata:
       labels:
         app: gatling
     spec:
+      restartPolicy: Never
       containers:
       - image: nextmetaphor/alpine-gatling:latest
         imagePullPolicy: Always
@@ -22,6 +22,8 @@ spec:
             mountPath: /opt/gatling-charts-highcharts-bundle/user-files
           - name: gatling-results
             mountPath: /opt/gatling-charts-highcharts-bundle/results
+          - name: gatling-conf
+            mountPath: /opt/gatling-charts-highcharts-bundle/conf
 
       volumes:
       - name: gatling-user-files
@@ -30,3 +32,6 @@ spec:
       - name: gatling-results
         hostPath:
           path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/results
+      - name: gatling-conf
+        hostPath:
+          path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/conf
