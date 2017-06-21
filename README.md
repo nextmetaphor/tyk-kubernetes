@@ -26,9 +26,7 @@ minikube ssh -- docker run -i --rm --privileged --pid=host debian nsenter -t 1 -
 #### 01. Install InfluxDB
 [InfluxDB](https://github.com/influxdata/influxdb) is an open-source time series database that we will use to store the metrics from Tyk. 
 ```bash
-kubectl create configmap influxdb-conf --from-file=influxdb/influxdb.conf
-kubectl create -f influxdb/influxdb-deployment.yaml
-kubectl create -f influxdb/influxdb-service.yaml
+kubectl create configmap influxdb-conf --from-file=influxdb/influxdb.conf; kubectl create -f influxdb/influxdb-deployment.yaml; kubectl create -f influxdb/influxdb-service.yaml
 ```
 
 We can verify that this has been deployed successfully by executing the following command which will allow us to log into the database.
@@ -185,13 +183,15 @@ open http://`minikube ip`:30103
 To performance test, create a gatling deployment, passing in the simulation file. 
 ```bash
 # First edit the gatling/user-files/SampleAPISimulation file and set the API key
-kubectl create -f gatling/gatling-deployment.yaml
+kubectl create -f gatling/gatling-job.yaml
 ```
 
-This will run constantly and will need killing by removing the Kubernetes deployment.
+This will run the Gatling test suite once; to remove the job run the command below.
 ```bash
-kubectl delete -f gatling/gatling-deployment.yaml
+kubectl delete -f gatling/gatling-job.yaml
 ```
+
+View the result of the test in Grafana; see [http://www.dblooman.com/docker/2015/02/22/real-time-gatling-results-with-docker-and-influxdb/](http://www.dblooman.com/docker/2015/02/22/real-time-gatling-results-with-docker-and-influxdb/) for more details on how these systems are plumbed together.
 
 #### Patch the Dashboard
 To change the version of the dashboard, simply deploy an alternative version and update the service selector.
@@ -264,7 +264,5 @@ kubectl delete -f telegraf/telegraf-deployment.yaml
 kubectl delete configmap telegraf-conf
 
 # Delete influxdb
-kubectl delete -f influxdb/influxdb-service.yaml
-kubectl delete -f influxdb/influxdb-deployment.yaml
-kubectl delete configmap influxdb-conf
+kubectl delete -f influxdb/influxdb-service.yaml; kubectl delete -f influxdb/influxdb-deployment.yaml; kubectl delete configmap influxdb-conf
 ```
