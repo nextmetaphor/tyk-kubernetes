@@ -16,6 +16,12 @@ This guide details how to install a Tyk Professional installation on a `minikube
 ### Install
 See [https://nextmetaphor.io/2017/01/19/local-kubernetes-on-macos/](https://nextmetaphor.io/2017/01/19/local-kubernetes-on-macos/) for details on how to install the prerequisite software onto macOS.
 
+Start with the following command.
+```bash
+minikube start --vm-driver=xhyve --memory 8192 --cpus 4
+kubectl describe nodes
+```
+
 The current date and time on `minikube` containers often falls behind the actual date and time. Use the following command to rectify that; for more details see [https://github.com/kubernetes/minikube/issues/1378](https://github.com/kubernetes/minikube/issues/1378).
 
 ```bash
@@ -26,7 +32,9 @@ minikube ssh -- docker run -i --rm --privileged --pid=host debian nsenter -t 1 -
 #### 01. Install InfluxDB
 [InfluxDB](https://github.com/influxdata/influxdb) is an open-source time series database that we will use to store the metrics from Tyk. 
 ```bash
-kubectl create configmap influxdb-conf --from-file=influxdb/influxdb.conf; kubectl create -f influxdb/influxdb-deployment.yaml; kubectl create -f influxdb/influxdb-service.yaml
+kubectl create configmap influxdb-conf --from-file=influxdb/influxdb.conf
+kubectl create -f influxdb/influxdb-deployment.yaml
+kubectl create -f influxdb/influxdb-service.yaml
 ```
 
 We can verify that this has been deployed successfully by executing the following command which will allow us to log into the database.
@@ -114,7 +122,9 @@ kubectl create -f tyk-dashboard/tyk-dashboard-service.yaml
 #### 07. Install Tyk Gateway
 Install the Tyk Gateway nodes themselves.
 ```bash
-kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf; kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml; kubectl create -f tyk-gateway/tyk-gateway-service.yaml
+kubectl create configmap tyk-gateway-conf --from-file=tyk-gateway/tyk.conf
+kubectl create -f tyk-gateway/tyk-gateway-deployment.yaml
+kubectl create -f tyk-gateway/tyk-gateway-service.yaml
 ```
 
 #### 08. Install Tyk Pump
@@ -141,7 +151,8 @@ kubectl create -f nginx/nginx-service.yaml
 #### 11. Install A grpc Server
 Install a custom grpc server which will service the custom plugins.
 ```bash
-kubectl create -f grpc/grpc-deployment.yaml; kubectl create -f grpc/grpc-service.yaml
+kubectl create -f grpc/grpc-deployment.yaml
+kubectl create -f grpc/grpc-service.yaml
 ```
 
 
@@ -164,14 +175,14 @@ At the login screen:
 # Set the for the Tyk user doing the deployment
 export AUTHORIZATION=
 
-curl http://`minikube ip`:30001/api/apis/ -X POST -d @sample-api/api-definition.json --header "Content-Type: application/json" --header "Authorization: $AUTHORIZATION"
+curl http://`minikube ip`:30001/api/apis/ -X POST -d @sample-api/js-plugin/api-definition.json --header "Content-Type: application/json" --header "Authorization: $AUTHORIZATION"
 
 # Set the API ID in the sample-api/token-definition.json file
-curl http://`minikube ip`:30001/api/keys -X POST -d @sample-api/token-definition.json --header "Content-Type: application/json" --header "Authorization: $AUTHORIZATION"
+curl http://`minikube ip`:30001/api/keys -X POST -d @sample-api/js-plugin/token-definition.json --header "Content-Type: application/json" --header "Authorization: $AUTHORIZATION"
 
 # Set for the key just created
 export KEY_ID=
-curl http://`minikube ip`:30002/sample-api/ --header "x-api-version: 1.0" --header "Authorization: $KEY_ID"
+curl http://`minikube ip`:30002/sample-api-js-plugin/ --header "x-api-version: 1.0" --header "Authorization: $KEY_ID"
 ```
 
 #### View the Statistics in Grafana

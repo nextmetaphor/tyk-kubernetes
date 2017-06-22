@@ -20,6 +20,8 @@ spec:
         volumeMounts:
           - name: tyk-gateway-conf
             mountPath: /etc/tyk-gateway
+          - name: tyk-gateway-middleware
+            mountPath: /opt/tyk-gateway/middleware
       volumes:
         - name: tyk-gateway-conf
           configMap:
@@ -27,3 +29,6 @@ spec:
             items:
               - key: tyk.conf
                 path: tyk.conf
+        - name: tyk-gateway-middleware
+          hostPath:
+            path: TODO/github.com/nextmetaphor/tyk-kubernetes/tyk-gateway/middleware

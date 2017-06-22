@@ -9,9 +9,9 @@
   "quota_remaining": 10000,
   "quota_renewal_rate": 2520000,
   "access_rights": {
-    "TODO-APIID": {
-      "api_id" : "TODO-APIID",
-      "api_name": "sample-api",
+    "TODO": {
+      "api_id" : "TODO",
+      "api_name": "sample-api-grpc-plugin",
       "versions": [
         "1.0"
       ]

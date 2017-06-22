@@ -1,0 +1,20 @@
+{
+  "last_check": 0,
+  "allowance": 1000,
+  "rate": 1000,
+  "per": 60,
+  "expires": 0,
+  "quota_max": 10000,
+  "quota_renews": 1424543479,
+  "quota_remaining": 10000,
+  "quota_renewal_rate": 2520000,
+  "access_rights": {
+    "TODO": {
+      "api_id" : "TODO",
+      "api_name": "sample-api-js-plugin",
+      "versions": [
+        "1.0"
+      ]
+    }
+  }
+}
