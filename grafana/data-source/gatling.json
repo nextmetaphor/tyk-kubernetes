@@ -1,0 +1,10 @@
+{
+  "name" : "gatling",
+  "type" : "influxdb",
+  "url" : "http://influxdb:8086",
+  "access" : "proxy",
+  "database" : "graphite",
+  "user" : "admin",
+  "password" : "admin",
+  "isDefault" : false
+}

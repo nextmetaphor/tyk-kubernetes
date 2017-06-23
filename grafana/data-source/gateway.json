@@ -1,0 +1,10 @@
+{
+  "name": "Gateway",
+  "type": "influxdb",
+  "url": "http://influxdb:8086",
+  "access": "proxy",
+  "database": "telegraf",
+  "user": "admin",
+  "password": "admin",
+  "isDefault": true
+}

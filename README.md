@@ -47,11 +47,11 @@ Note that
 * the Username should be set to `admin`
 * the Password should be set to `admin`
 
-Create an analytics databases for Tyk.
+Create an analytics databases for Tyk. See [https://docs.influxdata.com/influxdb/v1.2//tools/api/](https://docs.influxdata.com/influxdb/v1.2//tools/api/)
+for more information around the influxdb API.
 ```bash
-CREATE DATABASE "tyk_analytics"
+curl -X POST -u admin:admin "http://`minikube ip`:30100/query" --data-urlencode "q=CREATE DATABASE \"tyk_analytics\""
 ```
-
 
 #### 02. Install Telegraf
 [Telegraf](https://github.com/influxdata/telegraf) is an open-source metrics collection daemon that we will use to collect metrics from Tyk and then store in InfluxDB.
@@ -76,24 +76,12 @@ Note that
 * the Username should be set to `admin`
 * the Password should be set to `admin`
 
-Once logged in, create a data source with the following options:
-* the **Name** should be set to `Gateway`
-* the **Type** should be set to `InfluxDB`
-
-Within the **Http settings** section:
-* the **Url** should be set to `http://influxdb:8086`
-* **Access** should be set to `Proxy`
-
-Leave everything unchecked in the **Http Auth** section.
-
-Within the **InfluxDB Details** section:
-* the **Database** should be set to `telegraf`
-* the **User** should be set to `admin`
-* the **Password** should be set to `admin`
-
-Create another datasource with the above values, changing:
-* the **Name** should be set to `tyk_analytics`
-* the **Database** should be set to `tyk_analytics`
+Import the data sources we need as follows.
+```bash
+curl -X POST -u admin:admin "http://`minikube ip`:30103/api/datasources" -d @grafana/data-source/gateway.json --header "Content-Type: application/json"
+curl -X POST -u admin:admin "http://`minikube ip`:30103/api/datasources" -d @grafana/data-source/gatling.json --header "Content-Type: application/json"
+curl -X POST -u admin:admin "http://`minikube ip`:30103/api/datasources" -d @grafana/data-source/tyk-analytics.json --header "Content-Type: application/json"
+```
 
 #### 04. Install Mongo
 Install the Mongo database which stores the Tyk API definitions and long-term analytics information.

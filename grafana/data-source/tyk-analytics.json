@@ -1,0 +1,10 @@
+{
+  "name" : "tyk_analytics",
+  "type" : "influxdb",
+  "url" : "http://influxdb:8086",
+  "access" : "proxy",
+  "database" : "tyk_analytics",
+  "user" : "admin",
+  "password" : "admin",
+  "isDefault" : false
+}
