@@ -28,10 +28,10 @@ spec:
       volumes:
       - name: gatling-user-files
         hostPath:
-          path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/user-files
+          path: TODO/gatling/user-files
       - name: gatling-results
         hostPath:
-          path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/results
+          path: TODO/gatling/results
       - name: gatling-conf
         hostPath:
-          path: TODO/github.com/nextmetaphor/tyk-kubernetes/gatling/conf
+          path: TODO/gatling/conf

@@ -31,4 +31,4 @@ spec:
                 path: tyk.conf
         - name: tyk-gateway-middleware
           hostPath:
-            path: TODO/github.com/nextmetaphor/tyk-kubernetes/tyk-gateway/middleware
+            path: TODO/tyk-gateway/middleware

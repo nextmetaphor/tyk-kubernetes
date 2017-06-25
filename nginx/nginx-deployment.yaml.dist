@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:alpine
+        imagePullPolicy: Always
+        name: redis
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: nginx-html
+            mountPath: /usr/share/nginx/html
+      volumes:
+      - name: nginx-html
+        hostPath:
+          path: TODO/nginx/html
